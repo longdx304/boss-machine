@@ -7,9 +7,7 @@ const {deleteFromDatabasebyId, getAllFromDatabase, addToDatabase, getFromDatabas
 ideasRouter.param('ideaId', (req, res, next, id) => { //check obj ID and attach obj to request
     req.idea = getFromDatabaseById('ideas', id);
     if (!req.idea) {
-        const err = new Error('Invalid idea id');
-        err.status = 400; //create error
-        return next(err); //return error
+        return res.status(404).send('Invalid idea id') //return error
     }
     next();
 });

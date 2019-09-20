@@ -6,9 +6,7 @@ const {deleteFromDatabasebyId, getAllFromDatabase, addToDatabase, getFromDatabas
 minionsRouter.param('minionId', (req, res, next, id) => { //check obj ID and attach minion to request
     req.minion = getFromDatabaseById('minions', id);
     if (!req.minion) {
-        const err = new Error('Invalid minion id');
-        err.status = 400; //create error
-        return next(err); //return error
+        return res.status(404).send('Invalid minion id'); //return error
     }
     next();
 });
