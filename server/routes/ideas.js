@@ -1,7 +1,7 @@
 const express = require('express');
 const ideasRouter = express.Router();
 
-const {getAllFromDatabase, addToDatabase, getFromDatabaseById, updateInstanceInDatabase} = require('../db'); //import database's function
+const {deleteFromDatabasebyId, getAllFromDatabase, addToDatabase, getFromDatabaseById, updateInstanceInDatabase} = require('../db'); //import database's function
 
 ideasRouter.param('ideaId', (req, res, next, id) => { //check obj ID and attach obj to request
     req.idea = getFromDatabaseById('ideas', id);
@@ -30,6 +30,11 @@ ideasRouter.get('/:ideaId', (req, res, next) => { //Route for GET request to ret
 ideasRouter.put('/:ideaId', (req, res, next) => { //Route for PUT request to update single obj by id
     const idea = updateInstanceInDatabase('ideas', req.body); //update db using updateInstanceInDatabase(model, obj from req.body)
     res.status(200).send(idea); //send res status 200 with updated obj
+});
+
+ideasRouter.delete('/:ideaId', (req, res, next) => { //Route to DELETE request for single obj
+    deleteFromDatabasebyId('ideas', req.params.ideaId);
+    res.status(204).send(); //send res status 204
 });
 
 module.exports = ideasRouter;
