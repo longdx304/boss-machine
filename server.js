@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 const app = express();
 
 module.exports = app;
@@ -10,6 +11,9 @@ module.exports = app;
 */
 const PORT = process.env.PORT || 4001;
 
+if (!process.env.IS_TEST_ENV) {
+  app.use(morgan('tiny'));
+}
 // Add middleware for handling CORS requests from index.html
 app.use(cors());
 
@@ -20,6 +24,11 @@ app.use(bodyParser.json());
 const apiRouter = require('./server/api.js');
 app.use('/api', apiRouter);
 
+//Middleware for error handling
+app.use((err, res, req, next) => {
+  const status = err.status || 500;
+  res.status(status).send(err.message);
+});
 
 // This conditional is here for testing purposes:
 if (!module.parent) { 
