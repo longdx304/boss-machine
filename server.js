@@ -12,7 +12,7 @@ module.exports = app;
 const PORT = process.env.PORT || 4001;
 
 if (!process.env.IS_TEST_ENV) {
-  app.use(morgan('tiny'));
+  app.use(morgan('dev'));
 }
 // Add middleware for handling CORS requests from index.html
 app.use(cors());
