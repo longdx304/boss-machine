@@ -1,7 +1,17 @@
 const express = require('express');
 const ideasRouter = express.Router();
 
-const {getAllFromDatabase, addToDatabase, getFromDatabaseById} = require('../db'); //import database's function
+const {getAllFromDatabase, addToDatabase, getFromDatabaseById, updateInstanceInDatabase} = require('../db'); //import database's function
+
+ideasRouter.param('ideaId', (req, res, next, id) => { //check obj ID and attach obj to request
+    req.idea = getFromDatabaseById('ideas', id);
+    if (!req.idea) {
+        const err = new Error('Invalid idea id');
+        err.status = 400; //create error
+        return next(err); //return error
+    }
+    next();
+});
 
 ideasRouter.get('/', (req, res, next) => { //Route for GET request
     const ideas = getAllFromDatabase('ideas'); //retrieve array of data from db
@@ -14,13 +24,12 @@ ideasRouter.post('/', (req, res, next) => { //Route for POST Request to create n
 });
 
 ideasRouter.get('/:ideaId', (req, res, next) => { //Route for GET request to retrieve info for one obj
-    const idea = getFromDatabaseById('ideas', req.params.ideaId); //retrieve minion using getFromDatabaseById(model, id from params.minionId)
-    if (!idea) { //if retrieved obj is null
-        const err = new Error('Invalid ID requested');
-        err.status = 400; //create error
-        return next(err); //return error
-    }
-    res.status(200).send(idea); //send res status 200 with obj instance
+    res.status(200).send(req.idea); //send res status 200 with obj instance
+});
+
+ideasRouter.put('/:ideaId', (req, res, next) => { //Route for PUT request to update single obj by id
+    const idea = updateInstanceInDatabase('ideas', req.body); //update db using updateInstanceInDatabase(model, obj from req.body)
+    res.status(200).send(idea); //send res status 200 with updated obj
 });
 
 module.exports = ideasRouter;

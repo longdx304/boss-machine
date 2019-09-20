@@ -1,7 +1,17 @@
 const express = require('express');
 const minionsRouter = express.Router();
 
-const {getAllFromDatabase, addToDatabase, getFromDatabaseById} = require('../db'); //import database's function
+const {getAllFromDatabase, addToDatabase, getFromDatabaseById, updateInstanceInDatabase} = require('../db'); //import database's function
+
+minionsRouter.param('minionId', (req, res, next, id) => { //check obj ID and attach minion to request
+    req.minion = getFromDatabaseById('minions', id);
+    if (!req.minion) {
+        const err = new Error('Invalid minion id');
+        err.status = 400; //create error
+        return next(err); //return error
+    }
+    next();
+});
 
 minionsRouter.get('/', (req, res, next) => { //Route for GET request to retrieve info for all objs
     const minions = getAllFromDatabase('minions'); //retrieve array of all minions from db and save to minions
@@ -14,13 +24,12 @@ minionsRouter.post('/', (req, res, next) => { //Route for POST Request to create
 });
 
 minionsRouter.get('/:minionId', (req, res, next) => { //Route for GET request to retrieve info for one obj
-    const minion = getFromDatabaseById('minions', req.params.minionId); //retrieve minion using getFromDatabaseById(model, id from params.minionId)
-    if (!minion) { //if retrieved obj is null
-        const err = new Error('Invalid ID requested');
-        err.status = 400; //create error
-        return next(err); //return error
-    }
-    res.status(200).send(minion); //send res status 200 with obj instance
+    res.status(200).send(req.minion); //send res status 200 with obj instance
+});
+
+minionsRouter.put('/:minionId', (req, res, next) => { //Route for PUT request to update single obj by id
+    const minion = updateInstanceInDatabase('minions', req.body); //update db using updateInstanceInDatabase(model, obj from req.body)
+    res.status(200).send(minion); //send res status 200 with updated obj
 });
 
 module.exports = minionsRouter;
