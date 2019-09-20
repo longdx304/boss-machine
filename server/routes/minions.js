@@ -35,4 +35,7 @@ minionsRouter.delete('/:minionId', (req, res, next) => { //Route to DELETE reque
     res.status(204).send(); //send res status 204
 });
 
+const workRouter = require('./works');
+minionsRouter.use('/:minionId/work', workRouter);
+
 module.exports = minionsRouter;
