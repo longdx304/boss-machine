@@ -25,7 +25,7 @@ const apiRouter = require('./server/api.js');
 app.use('/api', apiRouter);
 
 //Middleware for error handling
-app.use((err, res, req, next) => {
+app.use((err, req, res, next) => {
   const status = err.status || 500;
   res.status(status).send(err.message);
 });
